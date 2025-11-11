@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Program Dashboard - Power BI Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4;
+            color: #333;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-header h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .dashboard-header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .kpi-card.green::before {
+            background: #10b981;
+        }
+
+        .kpi-card.yellow::before {
+            background: #f59e0b;
+        }
+
+        .kpi-card.red::before {
+            background: #ef4444;
+        }
+
+        .kpi-card.blue::before {
+            background: #3b82f6;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .kpi-target {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .kpi-target span {
+            font-weight: 600;
+        }
+
+        .kpi-trend {
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .trend-up {
+            color: #10b981;
+        }
+
+        .trend-down {
+            color: #ef4444;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-full {
+            grid-column: 1 / -1;
+        }
+
+        .line-chart {
+            height: 200px;
+            position: relative;
+            border-left: 2px solid #ddd;
+            border-bottom: 2px solid #ddd;
+            margin-top: 20px;
+        }
+
+        .line-chart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 180px;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 10px 0;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #3b82f6, #60a5fa);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: opacity 0.3s;
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: white;
+            font-weight: 500;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .heatmap-cell .location {
+            font-size: 10px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .heatmap-cell .value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .heat-high {
+            background: #10b981;
+        }
+
+        .heat-medium {
+            background: #f59e0b;
+        }
+
+        .heat-low {
+            background: #ef4444;
+        }
+
+        .heat-good {
+            background: #3b82f6;
+        }
+
+        .comparison-matrix {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .matrix-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .matrix-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .matrix-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-green {
+            background: #10b981;
+        }
+
+        .status-yellow {
+            background: #f59e0b;
+        }
+
+        .status-red {
+            background: #ef4444;
+        }
+
+        .alert-banner {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-banner h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #ef4444;
+        }
+
+        .alert-items {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .filters {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .filter-group select {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Geographic map container */
+        #county-heatmap {
+            height: 180px;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        /* Make Leaflet inherit font for consistency */
+        .leaflet-container {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* Custom tooltip styling */
+        .leaflet-tooltip.county-tooltip {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 12px;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+        .leaflet-tooltip.county-tooltip::before {
+            border-top-color: #333;
+        }
+    </style>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>📊 JA South Florida Programs Dashboard</h1>
+        <div class="subtitle">Real-time program performance monitoring | Project Manager: Angel Milla | Last updated: Nov 11, 2025 10:30 AM</div>
+    </div>
+
+    <div class="filters">
+        <div class="filter-group">
+            <label>Academic Year:</label>
+            <select>
+                <option>2025-2026</option>
+                <option>2024-2025</option>
+                <option>2023-2024</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Quarter:</label>
+            <select>
+                <option>Q2 (All)</option>
+                <option>September</option>
+                <option>October</option>
+                <option>November</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Program:</label>
+            <select>
+                <option>All Programs</option>
+                <option>ELC</option>
+                <option>Pre-App & YouthBuild</option>
+                <option>3DE</option>
+                <option>SYE/Career Bound</option>
+                <option>Career Source</option>
+                <option>Stock Market Challenge</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>County:</label>
+            <select>
+                <option>All Counties</option>
+                <option>Broward</option>
+                <option>Miami-Dade</option>
+                <option>Palm Beach</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Alert Banner -->
+    <div class="alert-banner">
+        <h3>⚠️ Action Required - 2 Programs Need Attention</h3>
+        <div class="alert-items">
+            <div class="alert-item">
+                <span class="status-indicator status-yellow"></span>
+                Career Source: 77% attendance (below 80% threshold)
+            </div>
+            <div class="alert-item">
+                <span class="status-indicator status-red"></span>
+                Stock Market Challenge: 68% completion rate (needs improvement)
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="dashboard-container">
+        <div class="kpi-card green">
+            <div class="kpi-label">Total Students Served</div>
+            <div class="kpi-value">3,847</div>
+            <div class="kpi-target">Target: <span>3,500</span></div>
+            <div class="kpi-trend trend-up">↑ 9.9% vs target</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 110%; background: #10b981;"></div>
+            </div>
+        </div>
+
+        <div class="kpi-card yellow">
+            <div class="kpi-label">Overall Completion Rate</div>
+            <div class="kpi-value">81.7%</div>
+            <div class="kpi-target">Target: <span>85%</span></div>
+            <div class="kpi-trend trend-down">↓ 3.3% below target</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 81.7%; background: #f59e0b;"></div>
+            </div>
+        </div>
+
+        <div class="kpi-card green">
+            <div class="kpi-label">Avg Program Impact Score</div>
+            <div class="kpi-value">4.4/5.0</div>
+            <div class="kpi-target">Target: <span>4.0</span></div>
+            <div class="kpi-trend trend-up">↑ 0.4 above target</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 88%; background: #10b981;"></div>
+            </div>
+        </div>
+
+        <div class="kpi-card blue">
+            <div class="kpi-label">YTD Budget Utilization</div>
+            <div class="kpi-value">68.2%</div>
+            <div class="kpi-target">Budget: <span>$952K / $1.4M</span></div>
+            <div class="kpi-trend" style="color: #3b82f6;">⊙ On track for Q2</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 68.2%; background: #3b82f6;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trend Charts Row 1 -->
+    <div class="chart-row">
+        <div class="chart-container">
+            <div class="chart-title">📈 Monthly Enrollment Trends</div>
+            <div class="bar-chart">
+                <div class="bar" style="height: 65%;">
+                    <div class="bar-value">520</div>
+                    <div class="bar-label">Jul</div>
+                </div>
+                <div class="bar" style="height: 80%;">
+                    <div class="bar-value">640</div>
+                    <div class="bar-label">Aug</div>
+                </div>
+                <div class="bar" style="height: 100%;">
+                    <div class="bar-value">800</div>
+                    <div class="bar-label">Sep</div>
+                </div>
+                <div class="bar" style="height: 90%;">
+                    <div class="bar-value">720</div>
+                    <div class="bar-label">Oct</div>
+                </div>
+                <div class="bar" style="height: 75%;">
+                    <div class="bar-value">600</div>
+                    <div class="bar-label">Nov</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">📊 Completion Rates Over Time</div>
+            <div class="line-chart">
+                <svg viewBox="0 0 300 150" style="overflow: visible;">
+                    <!-- Grid lines -->
+                    <line x1="0" y1="37.5" x2="300" y2="37.5" stroke="#f0f0f0" stroke-width="1"/>
+                    <line x1="0" y1="75" x2="300" y2="75" stroke="#f0f0f0" stroke-width="1"/>
+                    <line x1="0" y1="112.5" x2="300" y2="112.5" stroke="#f0f0f0" stroke-width="1"/>
+                    
+                    <!-- Completion Rate Line -->
+                    <polyline points="0,45 60,38 120,50 180,42 240,55 300,48" 
+                              fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
+                    
+                    <!-- Target Line -->
+                    <line x1="0" y1="37.5" x2="300" y2="37.5" stroke="#10b981" stroke-width="2" stroke-dasharray="5,5"/>
+                    
+                    <!-- Data points -->
+                    <circle cx="0" cy="45" r="4" fill="#3b82f6"/>
+                    <circle cx="60" cy="38" r="4" fill="#3b82f6"/>
+                    <circle cx="120" cy="50" r="4" fill="#3b82f6"/>
+                    <circle cx="180" cy="42" r="4" fill="#3b82f6"/>
+                    <circle cx="240" cy="55" r="4" fill="#3b82f6"/>
+                    <circle cx="300" cy="48" r="4" fill="#3b82f6"/>
+                    
+                    <!-- Labels -->
+                    <text x="0" y="165" font-size="10" fill="#666">Jul</text>
+                    <text x="60" y="165" font-size="10" fill="#666">Aug</text>
+                    <text x="120" y="165" font-size="10" fill="#666">Sep</text>
+                    <text x="180" y="165" font-size="10" fill="#666">Oct</text>
+                    <text x="240" y="165" font-size="10" fill="#666">Nov</text>
+                </svg>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div style="width: 16px; height: 3px; background: #3b82f6;"></div>
+                    <span>Actual Rate</span>
+                </div>
+                <div class="legend-item">
+                    <div style="width: 16px; height: 2px; background: #10b981; border-top: 2px dashed #10b981;"></div>
+                    <span>85% Target</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Patterns -->
+    <div class="chart-row">
+        <div class="chart-container">
+            <div class="chart-title">📅 Weekly Attendance Patterns</div>
+            <div class="bar-chart">
+                <div class="bar" style="height: 88%; background: linear-gradient(to top, #10b981, #34d399);">
+                    <div class="bar-value">88%</div>
+                    <div class="bar-label">Mon</div>
+                </div>
+                <div class="bar" style="height: 85%; background: linear-gradient(to top, #10b981, #34d399);">
+                    <div class="bar-value">85%</div>
+                    <div class="bar-label">Tue</div>
+                </div>
+                <div class="bar" style="height: 92%; background: linear-gradient(to top, #10b981, #34d399);">
+                    <div class="bar-value">92%</div>
+                    <div class="bar-label">Wed</div>
+                </div>
+                <div class="bar" style="height: 87%; background: linear-gradient(to top, #10b981, #34d399);">
+                    <div class="bar-value">87%</div>
+                    <div class="bar-label">Thu</div>
+                </div>
+                <div class="bar" style="height: 78%; background: linear-gradient(to top, #f59e0b, #fbbf24);">
+                    <div class="bar-value">78%</div>
+                    <div class="bar-label">Fri</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">🗺️ Geographic Distribution (Students by County)</div>
+            <!-- Map + Heat layer mockup -->
+            <div id="county-heatmap"></div>
+            <div class="legend" style="margin-top: 20px;">
+                <div class="legend-item">
+                    <div style="width: 16px; height: 16px; background: #10b981; border-radius: 3px;"></div>
+                    <span>High (1200+)</span>
+                </div>
+                <div class="legend-item">
+                    <div style="width: 16px; height: 16px; background: #3b82f6; border-radius: 3px;"></div>
+                    <span>Good (900-1199)</span>
+                </div>
+                <div class="legend-item">
+                    <div style="width: 16px; height: 16px; background: #f59e0b; border-radius: 3px;"></div>
+                    <span>Medium (600-899)</span>
+                </div>
+                <div class="legend-item">
+                    <div style="width: 16px; height: 16px; background: #ef4444; border-radius: 3px;"></div>
+                    <span>Low (<600)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Heat Map: Program Performance by School -->
+    <div class="chart-container chart-full">
+        <div class="chart-title">🏫 Program Performance by School (Completion Rate %)</div>
+        <div class="heatmap" style="grid-template-columns: repeat(10, 1fr);">
+            <div class="heatmap-cell heat-high">
+                <div class="location">Dillard HS</div>
+                <div class="value">92%</div>
+            </div>
+            <div class="heatmap-cell heat-high">
+                <div class="location">Coral Reef HS</div>
+                <div class="value">89%</div>
+            </div>
+            <div class="heatmap-cell heat-good">
+                <div class="location">Pompano MS</div>
+                <div class="value">86%</div>
+            </div>
+            <div class="heatmap-cell heat-good">
+                <div class="location">Pembroke Pines HS</div>
+                <div class="value">84%</div>
+            </div>
+            <div class="heatmap-cell heat-medium">
+                <div class="location">West Broward HS</div>
+                <div class="value">78%</div>
+            </div>
+            <div class="heatmap-cell heat-high">
+                <div class="location">Palmetto HS</div>
+                <div class="value">91%</div>
+            </div>
+            <div class="heatmap-cell heat-low">
+                <div class="location">Boyd Anderson HS</div>
+                <div class="value">69%</div>
+            </div>
+            <div class="heatmap-cell heat-good">
+                <div class="location">Stranahan HS</div>
+                <div class="value">82%</div>
+            </div>
+            <div class="heatmap-cell heat-medium">
+                <div class="location">Cooper City HS</div>
+                <div class="value">77%</div>
+            </div>
+            <div class="heatmap-cell heat-high">
+                <div class="location">Spanish River HS</div>
+                <div class="value">94%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Program Comparison Matrix -->
+    <div class="chart-container chart-full">
+        <div class="chart-title">📋 Program Comparison Matrix</div>
+        <div class="comparison-matrix">
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Program Name</th>
+                        <th>Students Enrolled</th>
+                        <th>Completion Rate</th>
+                        <th>Avg Attendance</th>
+                        <th>Impact Score</th>
+                        <th>Budget Used</th>
+                        <th>Sessions/Week</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="status-indicator status-green"></span></td>
+                        <td><strong>ELC</strong></td>
+                        <td>892</td>
+                        <td><strong style="color: #10b981;">93%</strong></td>
+                        <td>91%</td>
+                        <td>4.7/5.0</td>
+                        <td>$247K (82%)</td>
+                        <td>Varies</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-indicator status-green"></span></td>
+                        <td><strong>Pre-App & YouthBuild</strong></td>
+                        <td>523</td>
+                        <td><strong style="color: #10b981;">89%</strong></td>
+                        <td>87%</td>
+                        <td>4.6/5.0</td>
+                        <td>$156K (78%)</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-indicator status-green"></span></td>
+                        <td><strong>3DE</strong></td>
+                        <td>687</td>
+                        <td><strong style="color: #10b981;">87%</strong></td>
+                        <td>89%</td>
+                        <td>4.5/5.0</td>
+                        <td>$198K (74%)</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-indicator status-green"></span></td>
+                        <td><strong>SYE/Career Bound</strong></td>
+                        <td>745</td>
+                        <td><strong style="color: #10b981;">86%</strong></td>
+                        <td>88%</td>
+                        <td>4.4/5.0</td>
+                        <td>$189K (71%)</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-indicator status-yellow"></span></td>
+                        <td><strong>Career Source</strong></td>
+                        <td>432</td>
+                        <td>81%</td>
+                        <td><strong style="color: #f59e0b;">77%</strong></td>
+                        <td>4.2/5.0</td>
+                        <td>$97K (67%)</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-indicator status-red"></span></td>
+                        <td><strong>Stock Market Challenge</strong></td>
+                        <td>392</td>
+                        <td><strong style="color: #ef4444;">68%</strong></td>
+                        <td>82%</td>
+                        <td>3.9/5.0</td>
+                        <td>$48K (64%)</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><span class="status-indicator status-green"></span></td>
+                        <td><strong>Career Fair</strong></td>
+                        <td>176</td>
+                        <td><strong style="color: #10b981;">92%</strong></td>
+                        <td>95%</td>
+                        <td>4.6/5.0</td>
+                        <td>$17K (58%)</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr style="background: #f8f9fa; font-weight: 600;">
+                        <td></td>
+                        <td><strong>TOTALS / AVERAGES</strong></td>
+                        <td>3,847</td>
+                        <td><strong>85.1%</strong></td>
+                        <td>87.0%</td>
+                        <td>4.4/5.0</td>
+                        <td>$952K (68.2%)</td>
+                        <td>3.0 avg</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="legend" style="margin-top: 15px;">
+            <div class="legend-item">
+                <span class="status-indicator status-green"></span>
+                <span>Green: ≥85% completion, ≥80% attendance</span>
+            </div>
+            <div class="legend-item">
+                <span class="status-indicator status-yellow"></span>
+                <span>Yellow: 70-84% completion OR <80% attendance</span>
+            </div>
+            <div class="legend-item">
+                <span class="status-indicator status-red"></span>
+                <span>Red: <70% completion rate</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add any interactive behaviors here
+        console.log('Power BI Dashboard Mockup Loaded');
+        
+        // Simulate real-time update animation
+        setInterval(() => {
+            const timestamp = new Date().toLocaleTimeString();
+            console.log('Dashboard refreshed at:', timestamp);
+        }, 60000);
+    </script>
+    <!-- Leaflet scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-0wZb3kQxbjMYsG4J1gGkPDbwW7lmC4JzOszFv6v+4r0=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script>
+        // Geographic Distribution Heat Map Mockup
+        (function initCountyHeatMap() {
+            const mapEl = document.getElementById('county-heatmap');
+            if (!mapEl) return;
+            const countyMap = L.map('county-heatmap', {
+                attributionControl: false,
+                zoomControl: false
+            }).setView([26.2, -80.4], 8);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 12
+            }).addTo(countyMap);
+
+            // County data with student counts (drives styling)
+            const countyMetrics = {
+                'broward': 1523,
+                'miami-dade': 1387,
+                'palm beach': 937
+            };
+
+            // Helper: normalize county names for matching
+            const norm = (s) => String(s || '')
+                .toLowerCase()
+                .replace(/ county$/i, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            // Color scale similar to legend
+            const maxVal = Math.max(...Object.values(countyMetrics));
+            const getColor = (v) => {
+                const t = v / maxVal; // 0..1
+                if (t >= 0.85) return '#10b981'; // High
+                if (t >= 0.65) return '#3b82f6'; // Good
+                if (t >= 0.45) return '#f59e0b'; // Medium
+                return '#ef4444';                // Low
+            };
+
+            // Florida counties GeoJSON source
+            const geoUrl = 'https://raw.githubusercontent.com/danielcs88/fl_geo_json/refs/heads/master/geojson-fl-counties-fips.json';
+
+            // Function to render the geoJSON counties
+            function renderCounties(geoData) {
+                const selectedLayers = [];
+                const layer = L.geoJSON(geoData, {
+                    filter: (feature) => {
+                        const p = feature && feature.properties || {};
+                        const name = norm(p.NAME || p.Name || p.name || p.NAMELSAD || p.COUNTY || p.COUNTYNAME);
+                        return ['broward', 'miami-dade', 'palm beach'].includes(name);
+                    },
+                    style: (feature) => {
+                        const p = feature.properties || {};
+                        const name = norm(p.NAME || p.Name || p.name || p.NAMELSAD || p.COUNTY || p.COUNTYNAME);
+                        const val = countyMetrics[name];
+                        return {
+                            color: '#333',
+                            weight: 2,
+                            fillColor: getColor(val || 0),
+                            fillOpacity: 0.6
+                        };
+                    },
+                    onEachFeature: (feature, lyr) => {
+                        const p = feature.properties || {};
+                        const rawName = p.NAME || p.Name || p.name || p.NAMELSAD || p.COUNTY || p.COUNTYNAME || 'County';
+                        const name = norm(rawName);
+                        const val = countyMetrics[name] || 0;
+
+                        // Hover highlight
+                        lyr.on({
+                            mouseover: (e) => {
+                                e.target.setStyle({ 
+                                    weight: 3, 
+                                    fillOpacity: 0.75,
+                                    color: '#000'
+                                });
+                            },
+                            mouseout: (e) => {
+                                layer.resetStyle(e.target);
+                            }
+                        });
+
+                        // Tooltip with student count
+                        lyr.bindTooltip(`<strong>${rawName.replace(/ County$/i,'')}</strong><br>${val.toLocaleString()} students`, {
+                            sticky: true,
+                            className: 'county-tooltip'
+                        });
+
+                        selectedLayers.push(lyr);
+                    }
+                });
+
+                // Add counties and labels to map
+                layer.addTo(countyMap);
+                selectedLayers.forEach(l => l.addTo(countyMap));
+
+                // Fit map to show all counties
+                if (layer.getBounds().isValid()) {
+                    countyMap.fitBounds(layer.getBounds(), { padding: [10, 10] });
+                }
+            }
+
+            // Fetch and render the Florida counties GeoJSON
+            fetch(geoUrl)
+                .then(r => r.json())
+                .then(geoData => {
+                    renderCounties(geoData);
+                })
+                .catch(err => {
+                    console.error('Failed to load county GeoJSON:', err);
+                    // Simple fallback message
+                    mapEl.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; font-size: 12px;">County map unavailable</div>';
+                });
+        })();
+    </script>
+
+    <!-- Project Context Footer -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="font-size: 13px; color: #666; line-height: 1.6;">
+            <strong style="color: #333;">📍 Implementation Status:</strong> Phase 2 - Programs Dashboard Development (Feb-Apr 2026)<br>
+            <strong style="color: #333;">🎯 Project:</strong> JA South Florida Data Analytics Platform | Programs Dashboard & Student Hub<br>
+            <strong style="color: #333;">👥 Team:</strong> Project Manager: Angel Milla | Dashboard Developer: Lisa Berry-Wensveen | Executive: Myra Brown<br>
+            <strong style="color: #333;">💾 Data Source:</strong> SharePoint Master Excel Files → Power BI Power Query Integration<br>
+            <strong style="color: #333;">📊 Note:</strong> This mockup demonstrates the visual design and layout for the executive dashboard. Actual data connections and refresh schedules will be configured during Power BI implementation.
+        </div>
+    </div>
+</body>
+</html>
